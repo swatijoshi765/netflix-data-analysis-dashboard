@@ -1,0 +1,12 @@
+/* style.css */
+
+
+.metric-box {
+    background: linear-gradient(135deg, #1c1c1c, #292929);
+    border-radius: 15px;
+    padding: 20px;
+    color: #00FFCC;
+    text-align: center;
+    font-size: 24px;
+    box-shadow: 0 0 20px rgba(255, 49, 49, 0.397);
+}
