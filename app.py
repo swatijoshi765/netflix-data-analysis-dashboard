@@ -80,7 +80,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 
 
 # ======= Tabs Section =======
-tab1, tab2, tab3 = st.tabs(["🎭 Genres", "📈 Trends", "🌥️ Word Cloud"])
+tab1, tab2, tab3, tab4 = st.tabs(["🎭 Genres", "📈 Trends", "🌥️ Word Cloud","📊 Insights"])
 
 # === TAB 1: Genres ===
 with tab1:
@@ -143,3 +143,37 @@ with tab3:
     ax4.imshow(wordcloud, interpolation='bilinear')
     ax4.axis('off')
     st.pyplot(fig4)
+
+# === TAB 4: Insights ===
+
+with tab4:
+    st.subheader("📌 Top Genres by Country")
+    genre_country = df[['country', 'listed_in']].dropna()
+    genre_country['listed_in'] = genre_country['listed_in'].str.split(', ')
+    genre_exploded = genre_country.explode('listed_in')
+
+    top_grouped = genre_exploded.groupby(['country', 'listed_in']).size().reset_index(name='Count')
+    top_grouped = top_grouped.sort_values(by='Count', ascending=False).head(10)
+
+    fig5, ax5 = plt.subplots(figsize=(4, 3))
+    sns.barplot(data=top_grouped, x='Count', y='listed_in', hue='country', ax=ax5)
+    ax5.set_title("Top Genres by Country")
+    st.pyplot(fig5)
+
+    st.markdown("---")
+    st.subheader("⏱️ Average Duration by Type")
+
+    df_duration = df.copy()
+    df_duration['duration_clean'] = df_duration['duration'].str.extract(r'(\d+)').astype(float)
+    avg_duration = df_duration.groupby('type')['duration_clean'].mean().reset_index()
+
+    fig6, ax6 = plt.subplots(figsize=(4, 3))
+    sns.barplot(data=avg_duration, x='type', y='duration_clean', palette='coolwarm', ax=ax6)
+    ax6.set_ylabel("Average Duration")
+    ax6.set_title("Average Duration by Content Type")
+    st.pyplot(fig6)
+
+    st.markdown("---")
+    st.subheader("📋 Filtered Data Table")
+    st.dataframe(filtered[['title', 'type', 'country', 'release_year', 'listed_in', 'cast']].reset_index(drop=True))
+
